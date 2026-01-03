@@ -1,12 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">    
+<html lang="mn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sample HTML Page</title>
+    <title>Нэгж шилжүүлэх</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Welcome to the Sample HTML Page</h1>
-    <p>This is a simple HTML document .</p>
+
+<div class="container">
+    <h2>Нэгж шилжүүлэх</h2>
+
+    <label>Хүлээн авагчийн дугаар</label>
+    <input id="phone" type="text" maxlength="8" placeholder="91234567">
+
+    <label>Нэгжийн хэмжээ</label>
+    <input id="amount" type="number" min="10" max="10000" placeholder="500">
+
+    <div id="operator"></div>
+
+    <button onclick="showCallCode()">Call код</button>
+    <button onclick="showSMSCode()">SMS код</button>
+
+    <div id="output"></div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
