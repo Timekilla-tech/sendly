@@ -16,22 +16,22 @@ body.dark {
 
 /* Operator-based themes */
 body.operator-unitel {
-    --accent: #ff5a00; /* example orange */
+    --accent: #45c800a0;
     --card-bg: #fff7ef;
 }
 
 body.operator-mobicom {
-    --accent: #0066cc; /* blue */
+    --accent: #FF0014;
     --card-bg: #eef7ff;
 }
 
 body.operator-skytel {
-    --accent: #1aa7a1; /* teal */
+    --accent: #0000b4; /* teal */
     --card-bg: #eefefc;
 }
 
 body.operator-gmobile {
-    --accent: #7b1fa2; /* purple */
+    --accent: #feb600;
     --card-bg: #fbf2ff;
 }
 

@@ -2,18 +2,37 @@ const logos = {
     mobicom: "img/mobicom.png",
     unitel: "img/unitel.png",
     skytel: "img/skytel.png",
-    gmobile: "img/gmobile.png"
+    gmobile: "img/gmobile.svg"
 };
+
+
+const operatorMins = {
+    unitel: 100,
+    mobicom: 100,
+    skytel: 100,
+    gmobile: 500
+};
+
+function ensureAmountDefault(op) {
+    const amountInput = document.getElementById('amount');
+    if (!amountInput) return;
+    const min = (op && operatorMins[op]) ? operatorMins[op] : 10;
+    amountInput.min = min;
+    const cur = Number(amountInput.value);
+    if (!cur || Number.isNaN(cur) || cur < min) {
+        amountInput.value = min;
+    }
+}
 
 function detectOperator(num) {
     num = num.replace("-", "");
 
     const prefix = num.substring(0, 2);
 
-    if (["95", "85", "88"].includes(prefix)) return "unitel";
-    if (["91"].includes(prefix)) return "mobicom";
-    if (["94", "89"].includes(prefix)) return "skytel";
-    if (["98"].includes(prefix)) return "gmobile";
+    if (["88", "80", "89", "86"].includes(prefix)) return "unitel";
+    if (["85", "94", "95", "99"].includes(prefix)) return "mobicom";
+    if (["69", "90", "91", "92", "96"].includes(prefix)) return "skytel";
+    if (["98", "97", "93", "83"].includes(prefix)) return "gmobile";
 
     return null;
 }
@@ -53,16 +72,29 @@ function validatePhone() {
     document.body.classList.remove('operator-unitel','operator-mobicom','operator-skytel','operator-gmobile');
     document.body.classList.add('operator-' + op);
     updateThemeColorMeta();
+    ensureAmountDefault(op);
 
     return true;
 }
 
 function validateAmount() {
-    const amount = document.getElementById("amount").value;
+    const amountInput = document.getElementById("amount");
+    const amount = Number(amountInput.value);
     const error = document.getElementById("amountError");
 
-    if (amount < 10) {
-        error.textContent = "10₮ дээш оруул.";
+    // Determine operator from query param first, then from phone input
+    const params = new URLSearchParams(location.search);
+    const opParam = params.get('operator');
+    const phone = document.getElementById("phone").value.replace("-", "");
+    const detectedOp = detectOperator(phone);
+    const op = opParam && ['unitel','mobicom','skytel','gmobile'].includes(opParam) ? opParam : detectedOp;
+
+    const min = (op && operatorMins[op]) ? operatorMins[op] : 10;
+    // keep input `min` attribute in sync for UX
+    amountInput.min = min;
+
+    if (Number.isNaN(amount) || amount < min) {
+        error.textContent = `${min}₮ дээш оруул.`;
         return false;
     }
 
@@ -70,24 +102,44 @@ function validateAmount() {
     return true;
 }
 
-function showCallCode() {
-    if (!validatePhone() || !validateAmount()) return;
-
-    const phone = document.getElementById("phone").value.replace("-", "");
-    const amount = document.getElementById("amount").value;
-
-    const callCode = `*123*${amount}*${phone}#`;
-    document.getElementById("output").textContent = "📞 Call код:\n" + callCode;
-}
 
 function showSMSCode() {
     if (!validatePhone() || !validateAmount()) return;
 
     const phone = document.getElementById("phone").value.replace("-", "");
     const amount = document.getElementById("amount").value;
+    const { href } = buildSmsHref(phone, amount);
+    window.location.href = href;
+}
 
-    const smsCode = `${phone} ${amount}`;
-    document.getElementById("output").textContent = "✉️ SMS код:\n" + smsCode;
+function buildSmsHref(phone, amount) {
+    const op = detectOperator(phone);
+    const templates = {
+        gmobile: { number: '305', body: (p, a) => `T ${a} ${p}` },
+        unitel:  { number: '1444', body: (p, a) => `${p} ${a}` },
+        mobicom: { number: '596',  body: (p, a) => `${p} ${a}` },
+        skytel:  { number: '1525', body: (p, a) => `+${p} ${a}` }
+    };
+
+    let smsNumber = '';
+    let smsBody = `${phone} ${amount}`;
+
+    if (op && templates[op]) {
+        smsNumber = templates[op].number;
+        smsBody = templates[op].body(phone, amount);
+    }
+
+    const encodedBody = encodeURIComponent(smsBody);
+    const href = smsNumber ? `sms:${smsNumber}?body=${encodedBody}` : `sms:?body=${encodedBody}`;
+    return { href, smsNumber, smsBody };
+}
+
+function showCallCode() {
+    if (!validatePhone() || !validateAmount()) return;
+    const phone = document.getElementById("phone").value.replace("-", "");
+    const amount = document.getElementById("amount").value;
+    const callCode = `*123*${amount}*${phone}#`;
+    alert('📞 Call код:\n' + callCode);
 }
 
 // DARK MODE
