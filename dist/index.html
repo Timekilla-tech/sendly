@@ -4,24 +4,38 @@
     <meta charset="UTF-8">
     <title>Нэгж шилжүүлэх</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <link rel="icon" href="icons/icon-192.svg">
 </head>
 <body>
+
+<div class="top-bar">
+    <button id="themeToggle">🌙</button>
+</div>
 
 <div class="container">
     <h2>Нэгж шилжүүлэх</h2>
 
-    <label>Хүлээн авагчийн дугаар</label>
-    <input id="phone" type="text" maxlength="8" placeholder="91234567">
+    <div class="input-group">
+        <label>Хүлээн авагчийн дугаар</label>
+        <div class="phone-wrapper">
+            <input id="phone" type="text" maxlength="9" placeholder="9123-4567">
+            <img id="opLogo" class="op-logo" src="" alt="">
+        </div>
+        <small id="phoneError" class="error"></small>
+    </div>
 
-    <label>Нэгжийн хэмжээ</label>
-    <input id="amount" type="number" min="10" max="10000" placeholder="500">
+    <div class="input-group">
+        <label>Нэгжийн хэмжээ</label>
+        <input id="amount" type="number" min="10" max="20000" placeholder="500">
+        <small id="amountError" class="error"></small>
+    </div>
 
-    <div id="operator"></div>
+    <button class="btn" onclick="showCallCode()">📞 Call код</button>
+    <button class="btn" onclick="showSMSCode()">✉️ SMS код</button>
 
-    <button onclick="showCallCode()">Call код</button>
-    <button onclick="showSMSCode()">SMS код</button>
-
-    <div id="output"></div>
+    <div id="output" class="output"></div>
 </div>
 
 <script src="script.js"></script>
